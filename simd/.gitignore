@@ -1,0 +1,9 @@
+build/*
+data/*
+docs/plots/*
+docs/disassembly/*
+
+!build/.keep
+!data/.keep
+!docs/plots/.keep
+!docs/disassembly/.keep
