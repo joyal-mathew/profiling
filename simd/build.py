@@ -61,7 +61,7 @@ def confidence_interval_95(data):
     return 1.96 * data.std() / np.sqrt(len(data))
 
 
-N_RUNS = 20
+N_RUNS = 10
 
 L1 = 192 * 1024
 L2 = 3 * 1024 ** 2
@@ -150,12 +150,62 @@ def cross_cache():
             print(n / 1024, cpe, *cpe_ci, file=cpe_f)
 
 
+def unaligned_and_tail():
+    ns = ["2m"]
+    ops = ["fma", "dot", "conv1d"]
+    exes = ["vectorized", "unaligned"]
+
+    tail_ns = ["32", "48"]
+    tail_rounds = "1k"
+
+    run_info = {}
+
+    for n in ns:
+        for op in ops:
+            for exe in exes:
+                run_info[(n, op, exe, "1")] = None
+
+    for n in tail_ns:
+        for op in ops:
+            run_info[(n, op, "vectorized", tail_rounds)] = None
+
+    runs = list(run_info)
+    shuffle(runs)
+
+    for n, op, exe, rounds in tqdm(runs):
+        run_info[(n, op, exe, rounds)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op, "-r", rounds], N_RUNS)
+
+    with open("data/align_speedup.dat", "w") as f:
+        for op in ops:
+            n = ns[0]
+            m = expand(n)
+            vector = run_info[(n, op, "vectorized", "1")]
+            unaligned = run_info[(n, op, "unaligned", "1")]
+
+            gflops_v, gflops_v_ci = compute(lambda a, b, axis=0: a.mean(axis=axis) / b.mean(axis=axis), vector["flop_count"], vector["time"])
+            gflops_u, gflops_u_ci = compute(lambda a, b, axis=0: a.mean(axis=axis) / b.mean(axis=axis), unaligned["flop_count"], unaligned["time"])
+
+            print(op, gflops_v, *gflops_v_ci, gflops_u, *gflops_u_ci, file=f)
+
+    with open(f"data/tail_effect.dat", "w") as f:
+        for op in ops:
+            m = expand(n)
+            clean = run_info[(tail_ns[0], op, "vectorized", tail_rounds)]
+            tail = run_info[(tail_ns[1], op, "vectorized", tail_rounds)]
+
+            gflops, gflops_ci = compute(lambda a, b, axis=0: a.mean(axis=axis) / b.mean(axis=axis), clean["flop_count"], clean["time"])
+            gflops_t, gflops_t_ci = compute(lambda a, b, axis=0: a.mean(axis=axis) / b.mean(axis=axis), tail["flop_count"], tail["time"])
+
+            print(op, gflops, *gflops_ci, gflops_t, *gflops_t_ci, file=f)
+
+
 if __name__ == "__main__":
     command(["./build.sh"])
 
     benchmark_names = [
         "vector_speedup",
         "cross_cache",
+        "unaligned_and_tail",
     ]
 
     g = globals()
