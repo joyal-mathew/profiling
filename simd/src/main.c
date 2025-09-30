@@ -30,6 +30,7 @@ const size_t PTR_OFFSET = 0;
 #endif
 
 typedef enum {
+    am_Undef,
     am_Unit,
     am_Strided,
     am_Gather,
@@ -254,18 +255,22 @@ int main(int argc, char **argv) {
     char *kernel = argv[2];
 
     bool cold = false;
-    AccessMode mode = am_Unit;
+    AccessMode mode = am_Undef;
     size_t rounds = 1;
     for (int i = 3; i < argc; ++i) {
         if (strcmp(argv[i], "-c") == 0) {
             cold = true;
         }
+        else if (strcmp(argv[i], "-u") == 0) {
+            assert(mode == am_Undef);
+            mode = am_Unit;
+        }
         else if (strcmp(argv[i], "-s") == 0) {
-            assert(mode == am_Unit);
+            assert(mode == am_Undef);
             mode = am_Strided;
         }
         else if (strcmp(argv[i], "-g") == 0) {
-            assert(mode == am_Unit);
+            assert(mode == am_Undef);
             mode = am_Gather;
         }
         else if (strcmp(argv[i], "-r") == 0) {
@@ -276,6 +281,8 @@ int main(int argc, char **argv) {
 
     if (mode == am_Strided)
         assert(n % STRIDE == 0);
+    else if (mode == am_Undef)
+        mode = am_Unit;
 
     srand(0);
 
@@ -326,6 +333,7 @@ int main(int argc, char **argv) {
 
     if (strcmp(kernel, "fma") == 0) {
         switch (mode) {
+        case am_Undef: assert(false); break;
         case am_Unit: BENCHMARK(fma_kernel(n, params[0], x, y)); break;
         case am_Strided: BENCHMARK(fma_strided(n, params[0], x, y)); break;
         case am_Gather: BENCHMARK(fma_gather(n, params[0], x, y, idx)); break;
@@ -333,6 +341,7 @@ int main(int argc, char **argv) {
     }
     else if (strcmp(kernel, "dot") == 0) {
         switch (mode) {
+        case am_Undef: assert(false); break;
         case am_Unit: BENCHMARK(s = dot_kernel(n, x, y)); break;
         case am_Strided: BENCHMARK(s = dot_strided(n, x, y)); break;
         case am_Gather: BENCHMARK(s = dot_gather(n, x, y, idx)); break;
@@ -340,6 +349,7 @@ int main(int argc, char **argv) {
     }
     else if (strcmp(kernel, "conv1d") == 0) {
         switch (mode) {
+        case am_Undef: assert(false); break;
         case am_Unit:
             BENCHMARK(conv1d_kernel(n, params[0], params[1], params[2], x, y));
             break;
