@@ -1,20 +1,11 @@
-from random import shuffle
-import subprocess
 import sys
+import os
+
+sys.path.append(os.path.dirname(os.getcwd()))
+from common import Runner, Benchmark, command, tqdm, trange
+
+from random import shuffle
 import math
-
-import numpy as np
-
-try:
-    from tqdm import tqdm, trange
-except ImportError:
-    print("[WARN]\ttdqm not found, progress will not be displayed")
-
-    def tqdm(x):
-        return x
-
-    def trange(n, **kwargs):
-        return range(n)
 
 
 FLOP_EVENT = "fp_ret_sse_avx_ops.all"
@@ -25,45 +16,12 @@ def align(addr, n):
     return (addr + n - 1) // n * n
 
 
-def command(args, **kwargs):
-    kwargs.setdefault("check", True)
-    return subprocess.run(args, **kwargs)
-
-
 def expand(n):
     try:
         return int(n)
     except ValueError:
         posfixes = ["k", "m"]
         return int(n[:-1]) * 1024 ** (posfixes.index(n[-1].lower()) + 1)
-
-
-class Benchmark(object):
-    def __init__(self, metrics):
-        self.metrics = metrics
-
-    def benchmark(self, cmd_args, num_runs):
-        results = { k: np.zeros(num_runs) for k in self.metrics }
-
-        for i in trange(num_runs, leave=False):
-            process = command(cmd_args, capture_output=True)
-            for metric, extract in self.metrics.items():
-                try:
-                    results[metric][i] = extract(process)
-                except:
-                    print("\n===CMD===")
-                    print(cmd_args)
-                    print("\n===STDOUT===")
-                    print(process.stdout.decode("utf-8"))
-                    print("\n===STDERR===")
-                    print(process.stderr.decode("utf-8"))
-                    raise
-
-        return results
-
-
-def confidence_interval_95(data):
-    return 1.96 * data.std() / np.sqrt(len(data))
 
 
 def f_mean(a, b, axis=0):
@@ -92,8 +50,6 @@ def compute_ratio(a, b):
      ci = compute_ci(a, b)
      return x, ci
 
-
-N_RUNS = 10
 
 L1 = 192 * 1024
 L2 = 3 * 1024 ** 2
@@ -128,7 +84,7 @@ def vector_speedup():
     shuffle(runs)
 
     for n, op, exe in tqdm(runs):
-        run_info[(n, op, exe)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op], N_RUNS)
+        run_info[(n, op, exe)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op])
 
     for op in ops:
         speedup_file = f"data/{op}_speedup.dat"
@@ -169,7 +125,7 @@ def cross_cache():
     shuffle(runs)
 
     for n in tqdm(runs):
-        run_info[n] = bench.benchmark(PERF_ARGS + ["build/vectorized", str(n), op], N_RUNS)
+        run_info[n] = bench.benchmark(PERF_ARGS + ["build/vectorized", str(n), op])
 
     with open("data/dot_cross_cache_gflops.dat", "w") as g_f, open("data/dot_cross_cache_cpe.dat", "w") as cpe_f:
         for n, info in run_info.items():
@@ -205,7 +161,7 @@ def unaligned_and_tail():
     shuffle(runs)
 
     for n, op, exe, rounds in tqdm(runs):
-        run_info[(n, op, exe, rounds)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op, "-r", rounds], N_RUNS)
+        run_info[(n, op, exe, rounds)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op, "-r", rounds])
 
     with open("data/align_speedup.dat", "w") as f:
         for op in ops:
@@ -246,7 +202,7 @@ def strided_and_gather():
     shuffle(runs)
 
     for op, a in tqdm(runs):
-        run_info[(op, a)] = bench.benchmark(PERF_ARGS + ["build/vectorized", n, op, a], N_RUNS)
+        run_info[(op, a)] = bench.benchmark(PERF_ARGS + ["build/vectorized", n, op, a])
 
     with open("data/strided_gather_effects.dat", "w") as f:
         m = expand(n)
@@ -282,7 +238,7 @@ def data_type():
     shuffle(runs)
 
     for n, op, exe in tqdm(runs):
-        run_info[(n, op, exe)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op], N_RUNS)
+        run_info[(n, op, exe)] = bench.benchmark(PERF_ARGS + ["build/" + exe, n, op])
 
     with open("data/data_type_effect.dat", "w") as f:
         for op in ops:
@@ -306,13 +262,5 @@ if __name__ == "__main__":
         "data_type",
     ]
 
-    g = globals()
-    benchmarks = { name: g[name] for name in benchmark_names }
-
-    to_run = None if len(sys.argv) < 2 else sys.argv[1]
-    if to_run is None:
-        for name, bench_func in tqdm(benchmarks.items()):
-            print("Running", name)
-            bench_func()
-    else:
-        benchmarks[to_run]()
+    runner = Runner(benchmark_names, globals())
+    runner.run(None if len(sys.argv) < 2 else sys.argv[1])
