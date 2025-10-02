@@ -35,7 +35,7 @@ def rw_ratio_sweep():
 
 
 def qd_sweep():
-    qds = list(range(1, 6))
+    qds = list(range(1, 111))
 
     with open("data/qd_sweep.txt", "w") as f:
         for qd in tqdm(qds):

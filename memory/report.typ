@@ -97,10 +97,8 @@ Execution time of the kernel appears to be directly related to the number of cac
 
 == TLB-Miss Impact
 
-#figure(image("docs/plots/tlb_miss_effect.svg"))
-
 The same multiplication kernel was used to measure the effects of TLB misses. Random accesses (spanning many pages) were interspersed to introduce TLB misses.
 
-#figure(image("docs/plots/cache_miss_effect.svg"))
+#figure(image("docs/plots/tlb_miss_effect.svg"))
 
 Execution time increases directly with TLB miss count. This makes sense because for each TLB miss the CPU has to walk the page table to translate the required address. This is a very expensive operation.

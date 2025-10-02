@@ -161,6 +161,8 @@ For the other two kernels, the unaligned cost is low. This is because they are b
 
 In the following experiment, we investigate the effects of tail handling. Tail-less Kernels are 32 bytes, tailed kernels are 48 bytes, and the operation is repeated 1000 times.
 
+#pagebreak()
+
 #columns(2)[
     #figure(image("docs/plots/tail_effect.svg"))
     #colbreak()
@@ -195,6 +197,8 @@ In this experiment we compare different access patterns: sequential, strided, an
 Performance degrades from unit stride to stride = 4 to random gather. The effect is most potent in the dot kernel. When using a stride of 4, the cache utilization is significantly reduced. Each load populates a 64 byte cache line but only 16 bytes are actually utilized since the next element resides in the next cache line. This significantly lowers the cache hit rate and leads to decreased performance.
 
 In the case of random gather, the effect is even worse. For each loaded cache line, only 4 bytes are expected to be utilized (32 bit float). Additionally the TLB hit rate is reduced due to loads coming from random pages.
+
+#pagebreak()
 
 == Data Type Comparison
 
@@ -246,6 +250,8 @@ fma_kernel:
     ; ...
     ```
 ]
+
+#pagebreak()
 
 We see the same for the dot kernel.
 
