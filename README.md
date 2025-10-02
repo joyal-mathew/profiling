@@ -21,10 +21,12 @@ Data:
 Plots:
 - `simd/docs/plots`
 - `memory/docs/plots`
+- `ssd/docs/plots`
 
 Plotting Scripts:
 - `simd/docs/plotting`
 - `memory/docs/plotting`
+- `ssd/docs/plotting`
 
 FIO Scripts:
 - `ssd/scripts`
