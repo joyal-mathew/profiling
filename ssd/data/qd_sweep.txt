@@ -1,0 +1,15 @@
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=1
+read: IOPS=19.0k, BW=74.2MiB/s (77.8MB/s)(128MiB/1725msec)
+lat (usec): min=23, max=838, avg=52.09, stdev=14.65
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=2
+read: IOPS=36.6k, BW=143MiB/s (150MB/s)(128MiB/895msec)
+lat (usec): min=17, max=731, avg=54.05, stdev=14.91
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=3
+read: IOPS=80.9k, BW=316MiB/s (331MB/s)(128MiB/405msec)
+lat (usec): min=12, max=739, avg=48.91, stdev=18.81
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=4
+read: IOPS=81.1k, BW=317MiB/s (332MB/s)(128MiB/404msec)
+lat (usec): min=15, max=702, avg=48.88, stdev=18.27
+job: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=5
+read: IOPS=120k, BW=471MiB/s (493MB/s)(128MiB/272msec)
+lat (usec): min=13, max=792, avg=55.86, stdev=22.31

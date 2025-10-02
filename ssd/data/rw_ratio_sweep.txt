@@ -1,0 +1,16 @@
+job: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=1
+read: IOPS=18.9k, BW=73.9MiB/s (77.5MB/s)(128MiB/1732msec)
+lat (usec): min=26, max=804, avg=52.28, stdev=15.57
+job: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=1
+read: IOPS=14.9k, BW=58.3MiB/s (61.1MB/s)(89.7MiB/1538msec)
+lat (usec): min=25, max=717, avg=54.74, stdev=18.26
+write: IOPS=6380, BW=24.9MiB/s (26.1MB/s)(38.3MiB/1538msec); 0 zone resets
+lat (usec): min=15, max=530, avg=26.63, stdev= 8.56
+job: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=1
+read: IOPS=12.4k, BW=48.5MiB/s (50.9MB/s)(64.0MiB/1319msec)
+lat (usec): min=25, max=708, avg=53.87, stdev=19.99
+write: IOPS=12.4k, BW=48.5MiB/s (50.9MB/s)(64.0MiB/1319msec); 0 zone resets
+lat (usec): min=15, max=1022, avg=25.54, stdev=11.03
+job: (g=0): rw=randrw, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=1
+write: IOPS=54.3k, BW=212MiB/s (222MB/s)(128MiB/604msec); 0 zone resets
+lat (usec): min=14, max=674, avg=18.05, stdev= 5.61
