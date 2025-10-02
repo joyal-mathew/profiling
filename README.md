@@ -13,12 +13,25 @@ Build Scripts:
 - `simd/build.sh`
 - `memory/build.sh`
 
+Data:
+- `simd/data`
+- `memory/data`
+- `ssd/data`
+
+Plots:
+- `simd/docs/plots`
+- `memory/docs/plots`
+
+Plotting Scripts:
+- `simd/docs/plotting`
+- `memory/docs/plotting`
+
+FIO Scripts:
+- `ssd/scripts`
+
 Experiment Running Scripts:
 - `simd/build.py`
 - `memory/build.py`
 - `ssd/build.py`
 
-The above depend on numpy (for stats).
-
-FIO Scripts:
-- `ssd/scripts`
+The Python scripts depend on numpy (for stats).
