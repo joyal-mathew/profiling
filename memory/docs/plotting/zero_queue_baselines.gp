@@ -10,4 +10,4 @@ set grid
 
 set key off
 
-plot "data/zero_queue_baselines.dat" with linespoints
+plot "data/zero_queue_baselines.dat" using 1:2 with linespoints

@@ -1,0 +1,8 @@
+[job]
+filename=/dev/nvme0n1p6
+rw=rw
+size=128Mi
+blocksize=128Ki
+iodepth=1
+direct=1
+ioengine=io_uring

@@ -17,10 +17,12 @@ TLB_MISS_ARGS = PERF_ARGS + [TLB_MISS_EVENT]
 def test_idle_latency(size):
     bench = Benchmark({
         "ns": lambda p: float(next(l for l in p.stdout.decode("utf-8").splitlines() if PERF_NEEDLE in l).split()[-2]),
-        # "cycles": lambda p: float(next(l for l in p.stdout.decode("utf-8").splitlines() if PERF_NEEDLE in l).split()[3]),
+        "cycles": lambda p: float(next(l for l in p.stdout.decode("utf-8").splitlines() if PERF_NEEDLE in l).split()[3]),
     })
 
-    return bench.benchmark(["mlc", "--idle_latency", "-b" + str(size)], num_runs=1)["ns"][0]
+    b = bench.benchmark(["mlc", "--idle_latency", "-b" + str(size)], num_runs=1)
+
+    return b["ns"][0], b["cycles"][0]
 
 
 def sweep(op, pattern, stride):
@@ -63,7 +65,7 @@ def zero_queue_baselines():
 
     with open("data/zero_queue_baselines.dat", "w") as f:
         for s in sizes:
-            print(s, run_info[s], file=f)
+            print(s, *run_info[s], file=f)
 
 
 def pattern_and_granularity():
@@ -144,7 +146,7 @@ def cache_miss():
     shuffle(runs)
 
     for r in tqdm(runs):
-        run_info[r] = bench.benchmark(CACHE_MISS_ARGS + ["build/main", n, str(r), "cache"], num_runs=10)
+        run_info[r] = bench.benchmark(CACHE_MISS_ARGS + ["build/main", n, str(r), "cache"], num_runs=20)
 
     data = []
     for info in run_info.values():
